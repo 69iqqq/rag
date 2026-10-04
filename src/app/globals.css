@@ -27,12 +27,12 @@
   }
 
   .dark {
-    --bg: #000000;
-    --bg-soft: #0a0a0a;
+    --bg: #020617;
+    --bg-soft: #0f172a;
     --fg: #f8fafc;
     --subtle: #94a3b8;
     --muted: #475569;
-    --line: #171717;
+    --line: #1e293b;
     --accent: #3b82f6;
     --accent-soft: #1e3a8a;
   }

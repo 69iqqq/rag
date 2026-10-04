@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import Link from "next/link";
-import { LayoutDashboard, FileText, Settings, Upload } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function DashboardLayout({
@@ -19,55 +18,43 @@ export default async function DashboardLayout({
       .eq("id", user.id)
       .single();
     if (profile?.full_name) {
-      name = profile.full_name.split(" ")[0]; // First name only
+      name = profile.full_name.split(" ")[0];
     }
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] flex-col md:flex-row relative max-w-7xl mx-auto w-full">
-       <div className="ambient-light bg-blue-500/10 w-[40vw] h-[40vw] -left-[10%] top-[10%]" />
+    <div className="flex min-h-[calc(100vh-4rem)] flex-col md:flex-row relative max-w-6xl mx-auto w-full">
+       <div className="ambient-light bg-blue-500/5 w-[40vw] h-[40vw] -left-[10%] top-[10%]" />
        
-      {/* Sidebar - Desktop */}
-      <aside className="hidden md:flex w-64 flex-col gap-6 px-6 py-8 border-r border-line">
+      <aside className="hidden md:flex w-56 flex-col gap-8 px-6 py-12 border-r border-line">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-muted mb-1">Welcome back</p>
-          <h2 className="text-xl font-semibold text-fg truncate">{name}</h2>
+          <p className="text-[11px] font-medium uppercase tracking-widest text-muted mb-2">Workspace</p>
+          <h2 className="text-lg font-semibold text-fg truncate">Good morning, {name}.</h2>
         </div>
 
         <nav className="flex flex-col gap-1">
           <Link
             href="/dashboard"
-            className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-subtle hover:bg-bg-soft hover:text-fg transition-colors"
+            className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium bg-bg-soft text-fg transition-colors"
           >
-            <LayoutDashboard className="h-4 w-4" />
-            Overview
-          </Link>
-          <Link
-            href="/dashboard/upload"
-            className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-subtle hover:bg-bg-soft hover:text-fg transition-colors"
-          >
-            <Upload className="h-4 w-4" />
-            New Analysis
-          </Link>
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-subtle hover:bg-bg-soft hover:text-fg transition-colors"
-          >
-            <FileText className="h-4 w-4" />
             My Resumes
           </Link>
-          {/* <Link
-            href="/dashboard/settings"
+          <Link
+            href="/templates"
             className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-subtle hover:bg-bg-soft hover:text-fg transition-colors"
           >
-            <Settings className="h-4 w-4" />
+            Templates
+          </Link>
+          <Link
+            href="/settings"
+            className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-subtle hover:bg-bg-soft hover:text-fg transition-colors"
+          >
             Settings
-          </Link> */}
+          </Link>
         </nav>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 p-4 md:p-8 relative z-10 w-full overflow-x-hidden">
+      <main className="flex-1 p-4 md:p-10 relative z-10 w-full overflow-x-hidden">
         {children}
       </main>
     </div>

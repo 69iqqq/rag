@@ -12,7 +12,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`dark ${inter.variable}`}>
+    <html lang="en" className={inter.variable}>
       {/* 
         The body has the background color and ambient lights. 
         It also handles the scrollbar styling if needed.
