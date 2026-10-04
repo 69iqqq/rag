@@ -305,7 +305,7 @@ export default function ResumePreview({ layout, className = "" }: { layout: Resu
   const r = SAMPLE_RESUMES[layout];
   return (
     <div
-      className={`paper relative aspect-[8.5/11] w-full overflow-hidden rounded-[6px] select-none [container-type:inline-size] ${className}`}
+      className={`paper relative aspect-[8.5/11] w-full bg-white overflow-hidden rounded-[6px] select-none [container-type:inline-size] ${className}`}
       role="img"
       aria-label={`Sample ${r.title} resume`}
     >

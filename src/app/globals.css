@@ -27,12 +27,12 @@
   }
 
   .dark {
-    --bg: #020617;
-    --bg-soft: #0f172a;
+    --bg: #000000;
+    --bg-soft: #0a0a0a;
     --fg: #f8fafc;
     --subtle: #94a3b8;
     --muted: #475569;
-    --line: #1e293b;
+    --line: #171717;
     --accent: #3b82f6;
     --accent-soft: #1e3a8a;
   }
@@ -44,7 +44,7 @@
   }
   
   .glass-panel {
-    @apply glass-layer rounded-3xl p-8 shadow-[0_8px_32px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgb(0,0,0,0.3)];
+    @apply bg-white/60 dark:bg-black/40 backdrop-blur-xl border border-line rounded-3xl p-8 shadow-[0_8px_32px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgb(0,0,0,0.3)];
   }
 
   .glass-strong {
@@ -86,3 +86,4 @@ body {
   opacity: 1;
   transform: translateY(0);
 }
+
