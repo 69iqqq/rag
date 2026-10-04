@@ -1,71 +1,106 @@
-import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
-import JobTools from "@/components/JobTools";
-import ResultList from "@/components/ResultList";
-import SkillList from "@/components/SkillList";
-import { cardClass } from "@/components/styles";
-import { uuidSchema } from "@/lib/schemas";
 import { createClient } from "@/lib/supabase/server";
-import type { Analysis } from "@/types";
+import { notFound, redirect } from "next/navigation";
+import Link from "next/link";
+import AnalysisCard from "@/components/AnalysisCard";
+import JobTools from "@/components/JobTools";
+import { ArrowLeft, Download, ExternalLink } from "lucide-react";
+import { btnGhost } from "@/components/styles";
+import Reveal from "@/components/Reveal";
 
-export default async function AnalysisPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function AnalysisPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
-  if (!uuidSchema.safeParse(id).success) notFound();
-
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const { data: { user } } = await supabase.auth.getUser();
 
-  // Filtering by user_id on top of RLS: changing the ID in the URL can never reveal another user's data.
-  const { data } = await supabase
+  if (!user) {
+    redirect("/login");
+  }
+
+  const { data: analysis } = await supabase
     .from("analyses")
-    .select("id, resume_id, score, skills, strengths, weaknesses, missing_skills, suggestions, created_at")
+    .select("*")
     .eq("id", id)
     .eq("user_id", user.id)
-    .maybeSingle();
-  if (!data) notFound();
+    .single();
 
-  const analysis = data as Omit<Analysis, "user_id">;
-  const asList = (value: unknown): string[] =>
-    Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+  if (!analysis) {
+    notFound();
+  }
+
+  // Generate public URL for the resume if available
+  let resumeUrl = "";
+  if (analysis.resume_url) {
+    const { data } = supabase.storage
+      .from("resumes")
+      .getPublicUrl(analysis.resume_url);
+    resumeUrl = data.publicUrl;
+  }
 
   return (
-    <div className="space-y-6">
-      <Link href="/dashboard" className="text-sm text-slate-600 underline">
-        Back to dashboard
-      </Link>
+    <div className="space-y-6 max-w-5xl mx-auto">
+      {/* Header Actions */}
+      <Reveal>
+         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
+            <Link
+               href="/dashboard"
+               className={`${btnGhost} text-muted hover:text-fg -ml-3`}
+            >
+               <ArrowLeft className="mr-2 h-4 w-4" />
+               Back to Dashboard
+            </Link>
+            
+            {resumeUrl && (
+               <a 
+                 href={resumeUrl} 
+                 target="_blank" 
+                 rel="noopener noreferrer"
+                 className={`${btnGhost} text-accent hover:bg-accent/10`}
+               >
+                 <Download className="mr-2 h-4 w-4" />
+                 View Original Resume
+               </a>
+            )}
+         </div>
 
-      <section className={cardClass}>
-        <h1 className="text-sm font-medium text-slate-600">Resume score</h1>
-        <p className="mt-1 text-5xl font-semibold text-slate-900">
-          {analysis.score ?? "-"}
-          <span className="text-2xl font-normal text-slate-500"> / 100</span>
-        </p>
-      </section>
+         <div>
+            <h1 className="text-3xl font-semibold text-fg tracking-tight">
+               {analysis.job_title || "General Analysis"}
+            </h1>
+            <p className="text-subtle mt-1 text-sm flex items-center gap-2">
+               {analysis.company_name && <span>{analysis.company_name}</span>}
+               {analysis.company_name && <span className="h-1 w-1 rounded-full bg-line" />}
+               <span>
+                  Analyzed on {new Date(analysis.created_at).toLocaleDateString()}
+               </span>
+            </p>
+         </div>
+      </Reveal>
 
-      <section className={cardClass}>
-        <h2 className="mb-3 text-base font-semibold text-slate-900">Skills</h2>
-        <SkillList skills={asList(analysis.skills)} />
-      </section>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className={cardClass}>
-          <ResultList title="Strengths" items={asList(analysis.strengths)} />
-        </div>
-        <div className={cardClass}>
-          <ResultList title="Weaknesses" items={asList(analysis.weaknesses)} />
-        </div>
-        <div className={cardClass}>
-          <ResultList title="Missing skills" items={asList(analysis.missing_skills)} />
-        </div>
-        <div className={cardClass}>
-          <ResultList title="Improvement suggestions" items={asList(analysis.suggestions)} />
-        </div>
+      {/* Main Analysis Display */}
+      <div className="mt-8">
+         <AnalysisCard analysis={analysis} />
       </div>
 
-      <JobTools resumeId={analysis.resume_id} />
+      {/* Job Description (If provided) */}
+      {analysis.job_description && (
+        <Reveal delay={0.2} className="mt-12">
+           <div className="glass-panel p-8">
+              <h3 className="text-lg font-semibold text-fg mb-4 flex items-center gap-2">
+                 <ExternalLink className="h-5 w-5 text-muted" />
+                 Original Job Description
+              </h3>
+              <div className="glass-layer p-4 rounded-xl border border-line overflow-hidden max-h-64 overflow-y-auto">
+                 <p className="whitespace-pre-wrap text-sm text-subtle leading-relaxed">
+                   {analysis.job_description}
+                 </p>
+              </div>
+           </div>
+        </Reveal>
+      )}
     </div>
   );
 }

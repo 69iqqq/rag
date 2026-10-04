@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { jsonRequest, mockSupabase } from "./helpers";
 
 vi.mock("@/lib/supabase/server", () => ({ createClient: vi.fn() }));
-vi.mock("@/lib/openai", () => ({
+vi.mock("@/lib/ai", () => ({
   analyzeResume: vi.fn(),
   analyzeJobDescription: vi.fn(),
   generateInterviewQuestions: vi.fn(),
@@ -12,7 +12,7 @@ import { POST as analyze } from "@/app/api/analyze/route";
 import { POST as interview } from "@/app/api/interview/route";
 import { POST as jobAnalysis } from "@/app/api/job-analysis/route";
 import { POST as saveResume } from "@/app/api/resumes/route";
-import { analyzeJobDescription, analyzeResume, generateInterviewQuestions } from "@/lib/openai";
+import { analyzeJobDescription, analyzeResume, generateInterviewQuestions } from "@/lib/ai";
 import { createClient } from "@/lib/supabase/server";
 
 const RESUME_ID = "11111111-1111-4111-8111-111111111111";

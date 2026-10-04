@@ -3,7 +3,7 @@
 Upload a PDF resume, get an AI score with strengths, weaknesses and skill gaps, compare it against a job
 description, and generate interview questions.
 
-**Stack:** Next.js (App Router) + TypeScript, Tailwind CSS, Supabase (Auth, Postgres, Storage), OpenAI API, Vercel.
+**Stack:** Next.js (App Router) + TypeScript, Tailwind CSS, Supabase (Auth, Postgres, Storage), Google Gemini API (Flash), Vercel.
 No separate backend: everything runs in Next.js Route Handlers and Server Components.
 
 ## 1. Setup
@@ -19,8 +19,8 @@ cp .env.example .env.local   # then fill in the values
 | --- | --- | --- |
 | `NEXT_PUBLIC_SUPABASE_URL` | browser + server | Supabase Project Settings -> API |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | browser + server | The anon (public) key. RLS protects the data. |
-| `OPENAI_API_KEY` | **server only** | Never prefix with `NEXT_PUBLIC_`. Only `src/lib/openai.ts` reads it. |
-| `OPENAI_MODEL` | server, optional | Defaults to `gpt-4o-mini`. |
+| `GEMINI_API_KEY` | **server only** | From https://aistudio.google.com/apikey. Never prefix with `NEXT_PUBLIC_`. Only `src/lib/ai.ts` reads it. |
+| `GEMINI_MODEL` | server, optional | Defaults to `gemini-3.8-flash`, falling back to `gemini-3.5-flash`. Run `npm run gemini:models` to list models your key can use. |
 
 The Supabase service-role key is never used or needed.
 
@@ -84,13 +84,13 @@ npm run build       # production build
 ```
 Select PDF -> validate (type, size) -> upload to Storage (browser, RLS-protected)
   -> POST /api/resumes   server downloads it, checks MIME + %PDF signature, extracts text, saves resume row
-  -> POST /api/analyze   server calls OpenAI, validates the JSON with zod, saves analysis
+  -> POST /api/analyze   server calls Gemini, validates the JSON with zod, saves analysis
   -> redirect to /dashboard/analysis/[id]
 ```
 
 Every API route: verifies the Supabase session -> takes the user id from the session (never from the request)
 -> validates the body with zod -> verifies the resume belongs to that user (404 otherwise) -> only then touches
-the database or OpenAI. AI output is validated against a strict schema before it is saved; invalid output
+the database or Gemini. AI output is validated against a strict schema before it is saved; invalid output
 returns a 502 and nothing is stored.
 
 | Route | Purpose |
@@ -115,4 +115,4 @@ returns a 502 and nothing is stored.
 - Interview questions are generated on demand and are not stored.
 - There is no per-user rate limiting on the AI routes. Add one (e.g. a daily cap counted from the
   `analyses` table) before opening the app to the public.
-- Resume text is sent to OpenAI. Tell users, and review OpenAI's data-use terms for your account.
+- Resume text is sent to Google Gemini. Tell users, and review Google's Gemini API data-use terms for your account.

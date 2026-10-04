@@ -1,25 +1,32 @@
 "use client";
 
+import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { btnSecondary } from "./styles";
+import { btnGhost } from "./styles";
+import { LogOut } from "lucide-react";
 
 export default function LogoutButton() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  async function logout() {
-    if (loading) return;
+  async function handleLogout() {
     setLoading(true);
-    await createClient().auth.signOut();
-    router.replace("/login");
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/");
     router.refresh();
   }
 
   return (
-    <button type="button" onClick={logout} disabled={loading} className={btnSecondary}>
-      {loading ? "Signing out..." : "Log out"}
+    <button
+      onClick={handleLogout}
+      disabled={loading}
+      className={btnGhost}
+      title="Log out"
+    >
+      <LogOut className="h-4 w-4" />
+      <span className="sr-only">Log out</span>
     </button>
   );
 }

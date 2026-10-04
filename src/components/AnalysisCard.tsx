@@ -1,29 +1,161 @@
-import Link from "next/link";
-import { formatDate } from "@/lib/format";
-import type { Analysis } from "@/types";
-import DeleteAnalysisButton from "./DeleteAnalysisButton";
-import { btnPrimary, cardClass } from "./styles";
+"use client";
 
-type AnalysisCardData = Pick<Analysis, "id" | "score" | "skills" | "created_at">;
+import ScoreRing from "./ScoreRing";
+import { CheckCircle2, XCircle, AlertCircle, TrendingUp, Sparkles, ChevronRight } from "lucide-react";
+import Reveal from "./Reveal";
+import { cardClass } from "./styles";
+import { useState } from "react";
 
-export default function AnalysisCard({ analysis }: { analysis: AnalysisCardData }) {
-  const skillCount = Array.isArray(analysis.skills) ? analysis.skills.length : 0;
-  return (
-    <article className={cardClass}>
-      <p className="text-3xl font-semibold text-slate-900">
-        {analysis.score ?? "-"}
-        <span className="text-base font-normal text-slate-500"> / 100</span>
-      </p>
-      <p className="mt-1 text-sm text-slate-600">{formatDate(analysis.created_at)}</p>
-      <p className="text-sm text-slate-600">
-        {skillCount} {skillCount === 1 ? "skill" : "skills"} detected
-      </p>
-      <div className="mt-4 flex gap-2">
-        <Link href={`/dashboard/analysis/${analysis.id}`} className={btnPrimary}>
-          View analysis
-        </Link>
-        <DeleteAnalysisButton id={analysis.id} />
+type AnalysisType = {
+  score: number;
+  summary: string;
+  strengths: string[];
+  weaknesses: string[];
+  recommendations: string[];
+  keyword_matches: string[];
+  missing_keywords: string[];
+};
+
+export default function AnalysisCard({ analysis }: { analysis: any }) {
+  // Try parsing the json safely
+  let parsedAnalysis: AnalysisType | null = null;
+  try {
+    if (typeof analysis.analysis_result === "string") {
+      parsedAnalysis = JSON.parse(analysis.analysis_result);
+    } else {
+      parsedAnalysis = analysis.analysis_result;
+    }
+  } catch (e) {
+    console.error("Failed to parse analysis result", e);
+  }
+
+  if (!parsedAnalysis) {
+    return (
+      <div className="glass-panel p-8 text-center text-red-500">
+        <AlertCircle className="mx-auto h-8 w-8 mb-2" />
+        <p>Failed to load analysis data.</p>
       </div>
-    </article>
+    );
+  }
+
+  return (
+    <div className="space-y-8">
+      {/* Header Section */}
+      <Reveal>
+         <div className="glass-panel p-8 flex flex-col md:flex-row gap-8 items-center border-l-4 border-l-accent">
+            <div className="shrink-0 flex flex-col items-center">
+              <ScoreRing score={parsedAnalysis.score} />
+              <span className="text-xs font-medium text-subtle mt-4 uppercase tracking-widest">ATS Match</span>
+            </div>
+            <div className="text-center md:text-left flex-1">
+               <h2 className="text-2xl font-semibold text-fg mb-3">Analysis Complete</h2>
+               <p className="text-subtle leading-relaxed">
+                 {parsedAnalysis.summary}
+               </p>
+            </div>
+         </div>
+      </Reveal>
+
+      {/* Two Column Grid */}
+      <div className="grid gap-6 md:grid-cols-2">
+         {/* Strengths */}
+         <Reveal delay={0.1}>
+            <div className={`${cardClass} h-full`}>
+               <div className="flex items-center gap-3 mb-6">
+                  <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center">
+                     <TrendingUp className="h-5 w-5 text-green-500" />
+                  </div>
+                  <h3 className="font-semibold text-fg text-lg">Strengths</h3>
+               </div>
+               <ul className="space-y-4">
+                  {parsedAnalysis.strengths?.map((item, i) => (
+                    <li key={i} className="flex gap-3 text-sm text-subtle items-start">
+                       <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                       <span className="leading-relaxed">{item}</span>
+                    </li>
+                  ))}
+               </ul>
+            </div>
+         </Reveal>
+
+         {/* Weaknesses */}
+         <Reveal delay={0.2}>
+            <div className={`${cardClass} h-full`}>
+               <div className="flex items-center gap-3 mb-6">
+                  <div className="h-10 w-10 rounded-full bg-red-500/10 flex items-center justify-center">
+                     <AlertCircle className="h-5 w-5 text-red-500" />
+                  </div>
+                  <h3 className="font-semibold text-fg text-lg">Areas to Improve</h3>
+               </div>
+               <ul className="space-y-4">
+                  {parsedAnalysis.weaknesses?.map((item, i) => (
+                    <li key={i} className="flex gap-3 text-sm text-subtle items-start">
+                       <XCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+                       <span className="leading-relaxed">{item}</span>
+                    </li>
+                  ))}
+               </ul>
+            </div>
+         </Reveal>
+      </div>
+
+      {/* Keywords & Recommendations */}
+      <div className="grid gap-6 md:grid-cols-3">
+          {/* Recommendations (Takes up 2 columns) */}
+         <Reveal delay={0.3} className="md:col-span-2">
+            <div className={`${cardClass} h-full`}>
+               <div className="flex items-center gap-3 mb-6">
+                  <div className="h-10 w-10 rounded-full bg-accent/10 flex items-center justify-center">
+                     <Sparkles className="h-5 w-5 text-accent" />
+                  </div>
+                  <h3 className="font-semibold text-fg text-lg">AI Recommendations</h3>
+               </div>
+               <ul className="space-y-5">
+                  {parsedAnalysis.recommendations?.map((item, i) => (
+                    <li key={i} className="flex gap-4 text-sm text-subtle items-start glass-layer p-4 rounded-xl border border-line">
+                       <ChevronRight className="h-5 w-5 text-accent shrink-0 mt-0.5" />
+                       <span className="leading-relaxed text-fg">{item}</span>
+                    </li>
+                  ))}
+               </ul>
+            </div>
+         </Reveal>
+
+         {/* Keywords */}
+         <Reveal delay={0.4} className="md:col-span-1">
+             <div className={`${cardClass} h-full flex flex-col gap-8`}>
+               <div>
+                  <h3 className="font-semibold text-fg text-sm mb-4 uppercase tracking-wider text-muted">Matched Keywords</h3>
+                  <div className="flex flex-wrap gap-2">
+                     {parsedAnalysis.keyword_matches?.length > 0 ? (
+                        parsedAnalysis.keyword_matches.map((kw, i) => (
+                          <span key={i} className="inline-flex items-center rounded-full bg-green-500/10 px-2.5 py-1 text-xs font-medium text-green-600 border border-green-500/20">
+                            {kw}
+                          </span>
+                        ))
+                     ) : (
+                        <span className="text-sm text-subtle">No matched keywords</span>
+                     )}
+                  </div>
+               </div>
+
+               <div>
+                  <h3 className="font-semibold text-fg text-sm mb-4 uppercase tracking-wider text-muted">Missing Keywords</h3>
+                  <div className="flex flex-wrap gap-2">
+                     {parsedAnalysis.missing_keywords?.length > 0 ? (
+                        parsedAnalysis.missing_keywords.map((kw, i) => (
+                          <span key={i} className="inline-flex items-center rounded-full bg-red-500/10 px-2.5 py-1 text-xs font-medium text-red-500 border border-red-500/20">
+                            {kw}
+                          </span>
+                        ))
+                     ) : (
+                        <span className="text-sm text-subtle">No missing keywords</span>
+                     )}
+                  </div>
+               </div>
+            </div>
+         </Reveal>
+      </div>
+    </div>
   );
 }

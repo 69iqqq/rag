@@ -1,9 +1,33 @@
 import AuthForm from "@/components/AuthForm";
+import Logo from "@/components/Logo";
+import Link from "next/link";
+import Reveal from "@/components/Reveal";
 
 export default function SignupPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center px-4">
-      <AuthForm mode="signup" />
-    </main>
+    <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center p-4 relative">
+      <div className="ambient-light bg-purple-500/10 w-[30vw] h-[30vw] left-[35%] top-[20%]" />
+
+      <Reveal className="w-full max-w-md">
+         <div className="glass-panel p-8 sm:p-12 w-full flex flex-col items-center">
+          <Logo />
+          <h1 className="mt-8 text-2xl font-semibold tracking-tight text-fg text-center">
+            Create an account
+          </h1>
+          <p className="mt-2 text-sm text-subtle text-center mb-8">
+            Start analyzing your resume in seconds.
+          </p>
+
+          <AuthForm type="signup" />
+
+          <p className="mt-8 text-center text-sm text-subtle">
+            Already have an account?{" "}
+            <Link href="/login" className="text-accent hover:underline underline-offset-4 font-medium transition-colors">
+              Log in
+            </Link>
+          </p>
+        </div>
+      </Reveal>
+    </div>
   );
 }

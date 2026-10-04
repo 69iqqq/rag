@@ -4,20 +4,21 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
-import ErrorMessage from "./ErrorMessage";
-import { btnPrimary, inputClass } from "./styles";
+import { btnPrimary, inputClass, labelClass } from "./styles";
+import { Mail, Lock, User, AlertCircle, Loader2 } from "lucide-react";
+import Reveal from "./Reveal";
 
 interface AuthFormProps {
-  mode: "login" | "signup";
+  type: "login" | "signup";
   initialError?: string;
 }
 
-export default function AuthForm({ mode, initialError }: AuthFormProps) {
+export default function AuthForm({ type, initialError }: AuthFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(initialError ?? null);
   const [notice, setNotice] = useState<string | null>(null);
-  const isSignup = mode === "signup";
+  const isSignup = type === "signup";
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -59,54 +60,99 @@ export default function AuthForm({ mode, initialError }: AuthFormProps) {
   }
 
   return (
-    <div className="w-full max-w-sm rounded-lg border border-slate-200 bg-white p-6">
-      <h1 className="text-xl font-semibold text-slate-900">{isSignup ? "Create your account" : "Log in"}</h1>
-      <form onSubmit={onSubmit} className="mt-5 space-y-4">
+    <Reveal className="w-full max-w-sm">
+      <form onSubmit={onSubmit} className="flex flex-col gap-6">
         {isSignup && (
-          <div>
-            <label htmlFor="fullName" className="mb-1 block text-sm font-medium text-slate-700">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="fullName" className={labelClass}>
               Full name
             </label>
-            <input id="fullName" name="fullName" type="text" autoComplete="name" required className={inputClass} />
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
+              <input
+                id="fullName"
+                name="fullName"
+                type="text"
+                autoComplete="name"
+                required
+                className={`${inputClass} pl-10`}
+                placeholder="John Doe"
+                disabled={loading}
+              />
+            </div>
           </div>
         )}
-        <div>
-          <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700">
+
+        <div className="flex flex-col gap-2">
+          <label htmlFor="email" className={labelClass}>
             Email
           </label>
-          <input id="email" name="email" type="email" autoComplete="email" required className={inputClass} />
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              className={`${inputClass} pl-10`}
+              placeholder="you@example.com"
+              disabled={loading}
+            />
+          </div>
         </div>
-        <div>
-          <label htmlFor="password" className="mb-1 block text-sm font-medium text-slate-700">
+
+        <div className="flex flex-col gap-2">
+          <label htmlFor="password" className={labelClass}>
             Password
           </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            autoComplete={isSignup ? "new-password" : "current-password"}
-            minLength={isSignup ? 8 : undefined}
-            required
-            className={inputClass}
-          />
-          {isSignup && <p className="mt-1 text-xs text-slate-500">At least 8 characters.</p>}
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autoComplete={isSignup ? "new-password" : "current-password"}
+              minLength={isSignup ? 8 : undefined}
+              required
+              className={`${inputClass} pl-10`}
+              placeholder="••••••••"
+              disabled={loading}
+            />
+          </div>
+          {isSignup && (
+            <p className="text-[11px] text-muted ml-1">At least 8 characters.</p>
+          )}
         </div>
-        <ErrorMessage message={error} />
-        {notice && (
-          <p role="status" className="rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-800">
-            {notice}
-          </p>
+
+        {error && (
+          <div className="flex items-center gap-2 rounded-lg bg-red-500/10 p-3 text-sm text-red-500 border border-red-500/20">
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            <p>{error}</p>
+          </div>
         )}
-        <button type="submit" disabled={loading} className={`${btnPrimary} w-full`}>
-          {loading ? (isSignup ? "Creating account..." : "Logging in...") : isSignup ? "Sign up" : "Log in"}
+
+        {notice && (
+          <div className="flex items-center gap-2 rounded-lg bg-green-500/10 p-3 text-sm text-green-600 border border-green-500/20">
+            <p>{notice}</p>
+          </div>
+        )}
+
+        <button 
+          type="submit" 
+          className={`${btnPrimary} w-full mt-2`} 
+          disabled={loading}
+        >
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Please wait
+            </>
+          ) : (
+            isSignup ? "Create account" : "Log in"
+          )}
         </button>
       </form>
-      <p className="mt-4 text-sm text-slate-600">
-        {isSignup ? "Already have an account? " : "New here? "}
-        <Link href={isSignup ? "/login" : "/signup"} className="font-medium text-slate-900 underline">
-          {isSignup ? "Log in" : "Create an account"}
-        </Link>
-      </p>
-    </div>
+    </Reveal>
   );
 }

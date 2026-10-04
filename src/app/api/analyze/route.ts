@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getOwnedResume, handleError, readJson, requireUser } from "@/lib/api";
 import { AppError } from "@/lib/errors";
-import { analyzeResume } from "@/lib/openai";
+import { analyzeResume } from "@/lib/ai";
 import { analyzeRequestSchema } from "@/lib/schemas";
 
 export const runtime = "nodejs";

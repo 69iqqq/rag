@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getOwnedResume, handleError, readJson, requireUser } from "@/lib/api";
-import { generateInterviewQuestions } from "@/lib/openai";
+import { generateInterviewQuestions } from "@/lib/ai";
 import { jobRequestSchema } from "@/lib/schemas";
 
 export const runtime = "nodejs";

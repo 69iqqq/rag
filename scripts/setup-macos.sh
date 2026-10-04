@@ -37,7 +37,7 @@ if [[ -f package-lock.json ]]; then npm ci; else npm install; fi
 say "Preparing .env.local"
 if [[ ! -f .env.local ]]; then
   cp .env.example .env.local
-  echo "Created .env.local. Fill in your Supabase and OpenAI values."
+  echo "Created .env.local. Fill in your Supabase and Gemini values."
 else
   echo ".env.local already exists, leaving it alone."
 fi
