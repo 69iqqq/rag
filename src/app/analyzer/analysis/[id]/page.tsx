@@ -2,8 +2,6 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import AnalysisCard from "@/components/AnalysisCard";
-import JobTools from "@/components/JobTools";
-import { ArrowLeft, Download, ExternalLink } from "lucide-react";
 import { btnGhost } from "@/components/styles";
 import Reveal from "@/components/Reveal";
 
@@ -49,7 +47,6 @@ export default async function AnalysisPage({
                href="/dashboard"
                className={`${btnGhost} text-muted hover:text-fg -ml-3`}
             >
-               <ArrowLeft className="mr-2 h-4 w-4" />
                Back to Dashboard
             </Link>
             
@@ -60,7 +57,6 @@ export default async function AnalysisPage({
                  rel="noopener noreferrer"
                  className={`${btnGhost} text-accent hover:bg-accent/10`}
                >
-                 <Download className="mr-2 h-4 w-4" />
                  View Original Resume
                </a>
             )}
@@ -89,8 +85,7 @@ export default async function AnalysisPage({
       {analysis.job_description && (
         <Reveal delay={0.2} className="mt-12">
            <div className="glass-panel p-8">
-              <h3 className="text-lg font-semibold text-fg mb-4 flex items-center gap-2">
-                 <ExternalLink className="h-5 w-5 text-muted" />
+              <h3 className="text-lg font-semibold text-fg mb-4">
                  Original Job Description
               </h3>
               <div className="glass-layer p-4 rounded-xl border border-line overflow-hidden max-h-64 overflow-y-auto">

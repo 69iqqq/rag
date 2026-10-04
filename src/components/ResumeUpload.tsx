@@ -2,18 +2,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { UploadCloud, Loader2, File, CheckCircle } from "lucide-react";
-import { btnPrimary, inputClass, labelClass } from "./styles";
 import Reveal from "./Reveal";
+import { btnPrimary, inputClass, labelClass } from "./styles";
 
 export default function ResumeUpload() {
+  const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
+  const [jobDescription, setJobDescription] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [companyName, setCompanyName] = useState("");
-  const [jobDescription, setJobDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -44,9 +43,9 @@ export default function ResumeUpload() {
     try {
       const formData = new FormData();
       formData.append("resume", file);
+      if (jobDescription) formData.append("jobDescription", jobDescription);
       if (jobTitle) formData.append("jobTitle", jobTitle);
       if (companyName) formData.append("companyName", companyName);
-      if (jobDescription) formData.append("jobDescription", jobDescription);
 
       const response = await fetch("/api/analyze", {
         method: "POST",
@@ -60,18 +59,19 @@ export default function ResumeUpload() {
 
       const { data } = await response.json();
       router.push(`/dashboard/analysis/${data.analysisId}`);
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred. Please try again.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "An unexpected error occurred. Please try again.";
+      setError(msg);
       setLoading(false);
     }
   };
 
   return (
     <Reveal className="w-full max-w-3xl mx-auto">
-      <div className="glass-panel p-6 sm:p-10">
+      <div className="border border-[#27272a] bg-[#09090b] rounded-2xl p-6 sm:p-10">
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-fg">New Analysis</h2>
-          <p className="text-sm text-subtle mt-2">
+          <h2 className="text-2xl font-bold text-white">New Resume Analysis</h2>
+          <p className="text-sm text-[#a1a1aa] mt-2">
             Upload your resume and the target job description to get started.
           </p>
         </div>
@@ -82,31 +82,25 @@ export default function ResumeUpload() {
             <label className={`${labelClass} mb-3 block`}>Resume (PDF)</label>
             <label
               className={`
-                relative flex flex-col items-center justify-center w-full h-48 
-                rounded-2xl border-2 border-dashed transition-all cursor-pointer
-                ${file ? "border-accent bg-accent/5" : "border-line hover:border-muted bg-bg-soft/50 hover:bg-bg-soft"}
+                relative flex flex-col items-center justify-center w-full h-44 
+                rounded-xl border-2 border-dashed transition-all cursor-pointer
+                ${file ? "border-white bg-white/[0.04]" : "border-[#27272a] hover:border-zinc-700 bg-black"}
               `}
             >
-              <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
+              <div className="flex flex-col items-center justify-center text-center px-4">
                 {file ? (
                   <>
-                    <div className="h-12 w-12 rounded-full bg-accent/20 flex items-center justify-center mb-3">
-                      <CheckCircle className="h-6 w-6 text-accent" />
-                    </div>
-                    <p className="mb-1 text-sm font-semibold text-fg">{file.name}</p>
-                    <p className="text-xs text-subtle">
-                      {(file.size / 1024 / 1024).toFixed(2)} MB
+                    <p className="mb-1 text-sm font-semibold text-white">{file.name}</p>
+                    <p className="text-xs text-[#a1a1aa]">
+                      {(file.size / 1024 / 1024).toFixed(2)} MB · Ready to Analyze
                     </p>
                   </>
                 ) : (
                   <>
-                    <div className="h-12 w-12 rounded-full bg-bg flex items-center justify-center mb-3 shadow-sm border border-line">
-                       <UploadCloud className="w-5 h-5 text-muted" />
-                    </div>
-                    <p className="mb-1 text-sm font-medium text-fg">
+                    <p className="mb-1 text-sm font-semibold text-white">
                       Click to upload or drag and drop
                     </p>
-                    <p className="text-xs text-subtle">PDF only (MAX. 5MB)</p>
+                    <p className="text-xs text-zinc-400">PDF documents only (Maximum 5MB)</p>
                   </>
                 )}
               </div>
@@ -122,7 +116,7 @@ export default function ResumeUpload() {
 
           <div className="grid gap-6 md:grid-cols-2">
             <div>
-              <label htmlFor="jobTitle" className={labelClass}>Target Job Title <span className="text-muted font-normal">(Optional)</span></label>
+              <label htmlFor="jobTitle" className={labelClass}>Target Job Title <span className="text-zinc-500 font-normal">(Optional)</span></label>
               <input
                 id="jobTitle"
                 type="text"
@@ -134,12 +128,12 @@ export default function ResumeUpload() {
               />
             </div>
             <div>
-              <label htmlFor="companyName" className={labelClass}>Company Name <span className="text-muted font-normal">(Optional)</span></label>
+              <label htmlFor="companyName" className={labelClass}>Company Name <span className="text-zinc-500 font-normal">(Optional)</span></label>
               <input
                 id="companyName"
                 type="text"
                 className={inputClass}
-                placeholder="e.g. Acme Corp"
+                placeholder="e.g. Google, Stripe"
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
                 disabled={loading}
@@ -148,12 +142,14 @@ export default function ResumeUpload() {
           </div>
 
           <div>
-            <label htmlFor="jobDescription" className={labelClass}>Job Description <span className="text-muted font-normal">(Optional but recommended)</span></label>
+            <label htmlFor="jobDescription" className={labelClass}>
+              Job Description <span className="text-zinc-500 font-normal">(Optional, for match analysis)</span>
+            </label>
             <textarea
               id="jobDescription"
-              rows={6}
-              className={`${inputClass} resize-y min-h-[120px]`}
-              placeholder="Paste the full job description here for highly targeted feedback..."
+              rows={5}
+              className={`${inputClass} resize-y text-sm leading-relaxed`}
+              placeholder="Paste the job description here to compare requirements against your resume..."
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
               disabled={loading}
@@ -161,27 +157,18 @@ export default function ResumeUpload() {
           </div>
 
           {error && (
-            <div className="rounded-xl bg-red-500/10 p-4 text-sm text-red-500 border border-red-500/20">
+            <div className="rounded-xl bg-rose-500/10 p-4 border border-rose-500/20 text-xs font-semibold text-rose-300">
               {error}
             </div>
           )}
 
-          <div className="flex justify-end pt-4 border-t border-line">
-             <button
-                type="submit"
-                disabled={!file || loading}
-                className={btnPrimary}
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Analyzing with Gemini AI...
-                  </>
-                ) : (
-                  "Analyze Resume"
-                )}
-              </button>
-          </div>
+          <button
+            type="submit"
+            className={`${btnPrimary} w-full py-3 text-sm`}
+            disabled={loading || !file}
+          >
+            {loading ? "Analyzing Document..." : "Analyze Resume"}
+          </button>
         </form>
       </div>
     </Reveal>

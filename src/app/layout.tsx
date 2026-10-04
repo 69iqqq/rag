@@ -1,29 +1,41 @@
 import { Inter } from "next/font/google";
 import type { ReactNode } from "react";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 
 export const metadata = {
-  title: "AI Resume Analyzer",
-  description: "Get instant AI feedback on your resume and find your perfect job match.",
+  title: "Next Role — Build a resume that gets noticed",
+  description:
+    "Create a professional resume in minutes with Next Role. Beautiful templates, live preview, and effortless PDF export.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
-      {/* 
-        The body has the background color and ambient lights. 
-        It also handles the scrollbar styling if needed.
-      */}
-      <body className="flex min-h-screen flex-col font-sans antialiased selection:bg-accent-soft">
+    <html lang="en" className={`dark ${inter.variable}`}>
+      <body className="flex min-h-screen flex-col bg-[#000000] text-white font-sans antialiased selection:bg-zinc-800 selection:text-white">
         <Navbar />
         <main className="flex-1">{children}</main>
-        
-        {/* Simple Footer */}
-        <footer className="border-t border-line py-12 text-center text-[13px] text-subtle">
-          <p>© {new Date().getFullYear()} Resume Analyzer. All rights reserved.</p>
+
+        <footer className="border-t border-white/[0.08] py-12 text-center text-xs text-[#a1a1aa]">
+          <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-[#a1a1aa]">
+              © {new Date().getFullYear()} Next Role. All rights reserved.
+            </p>
+            <div className="flex items-center gap-6 text-zinc-400">
+              <Link href="/templates" className="hover:text-white transition-colors">
+                Templates
+              </Link>
+              <Link href="/builder" className="hover:text-white transition-colors">
+                Resume Builder
+              </Link>
+              <Link href="/dashboard" className="hover:text-white transition-colors">
+                Dashboard
+              </Link>
+            </div>
+          </div>
         </footer>
       </body>
     </html>

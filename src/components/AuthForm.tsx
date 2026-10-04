@@ -1,12 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { btnPrimary, inputClass, labelClass } from "./styles";
-import { Mail, Lock, User, AlertCircle, Loader2 } from "lucide-react";
-import Reveal from "./Reveal";
+import { GlassInput, GlassButton } from "./GlassComponents";
 
 interface AuthFormProps {
   type: "login" | "signup";
@@ -45,9 +42,15 @@ export default function AuthForm({ type, initialError }: AuthFormProps) {
           },
         });
         if (signUpError) return setError(signUpError.message);
-        if (!data.session) return setNotice("Check your email to confirm your account, then log in.");
+        if (!data.session) {
+          setNotice("Confirmation link sent to your email. Confirm then log in.");
+          return;
+        }
       } else {
-        const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
         if (signInError) return setError(signInError.message);
       }
       router.replace("/dashboard");
@@ -60,99 +63,69 @@ export default function AuthForm({ type, initialError }: AuthFormProps) {
   }
 
   return (
-    <Reveal className="w-full max-w-sm">
-      <form onSubmit={onSubmit} className="flex flex-col gap-6">
-        {isSignup && (
-          <div className="flex flex-col gap-2">
-            <label htmlFor="fullName" className={labelClass}>
-              Full name
-            </label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
-              <input
-                id="fullName"
-                name="fullName"
-                type="text"
-                autoComplete="name"
-                required
-                className={`${inputClass} pl-10`}
-                placeholder="John Doe"
-                disabled={loading}
-              />
-            </div>
-          </div>
-        )}
-
-        <div className="flex flex-col gap-2">
-          <label htmlFor="email" className={labelClass}>
-            Email
-          </label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              className={`${inputClass} pl-10`}
-              placeholder="you@example.com"
-              disabled={loading}
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <label htmlFor="password" className={labelClass}>
-            Password
-          </label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete={isSignup ? "new-password" : "current-password"}
-              minLength={isSignup ? 8 : undefined}
-              required
-              className={`${inputClass} pl-10`}
-              placeholder="••••••••"
-              disabled={loading}
-            />
-          </div>
-          {isSignup && (
-            <p className="text-[11px] text-muted ml-1">At least 8 characters.</p>
-          )}
-        </div>
-
-        {error && (
-          <div className="flex items-center gap-2 rounded-lg bg-red-500/10 p-3 text-sm text-red-500 border border-red-500/20">
-            <AlertCircle className="h-4 w-4 shrink-0" />
-            <p>{error}</p>
-          </div>
-        )}
-
-        {notice && (
-          <div className="flex items-center gap-2 rounded-lg bg-green-500/10 p-3 text-sm text-green-600 border border-green-500/20">
-            <p>{notice}</p>
-          </div>
-        )}
-
-        <button 
-          type="submit" 
-          className={`${btnPrimary} w-full mt-2`} 
+    <form onSubmit={onSubmit} className="flex flex-col gap-4 w-full">
+      {isSignup && (
+        <GlassInput
+          label="Full Name"
+          name="fullName"
+          id="fullName"
+          type="text"
+          autoComplete="name"
+          required
+          placeholder="e.g. Alex Rivera"
           disabled={loading}
+        />
+      )}
+
+      <GlassInput
+        label="Email Address"
+        name="email"
+        id="email"
+        type="email"
+        autoComplete="email"
+        required
+        placeholder="you@example.com"
+        disabled={loading}
+      />
+
+      <div>
+        <GlassInput
+          label="Password"
+          name="password"
+          id="password"
+          type="password"
+          autoComplete={isSignup ? "new-password" : "current-password"}
+          minLength={isSignup ? 8 : undefined}
+          required
+          placeholder="••••••••"
+          disabled={loading}
+        />
+        {isSignup && (
+          <p className="text-[11px] text-zinc-400 mt-1">Minimum 8 characters.</p>
+        )}
+      </div>
+
+      {error && (
+        <div className="rounded-xl bg-rose-500/10 border border-rose-500/20 p-3 text-xs text-rose-300 font-medium leading-relaxed">
+          {error}
+        </div>
+      )}
+
+      {notice && (
+        <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-3 text-xs text-emerald-300 font-medium leading-relaxed">
+          {notice}
+        </div>
+      )}
+
+      <div className="pt-2">
+        <GlassButton
+          type="submit"
+          disabled={loading}
+          className="w-full"
         >
-          {loading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Please wait
-            </>
-          ) : (
-            isSignup ? "Create account" : "Log in"
-          )}
-        </button>
-      </form>
-    </Reveal>
+          {loading ? "Please wait..." : isSignup ? "Create Account" : "Log In"}
+        </GlassButton>
+      </div>
+    </form>
   );
 }

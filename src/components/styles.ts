@@ -1,18 +1,28 @@
-// Liquid Glass Tokens
-const btnBase = "inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98]";
+// Strict Monochrome Design Tokens: White on Black
 
-export const btnPrimary = `${btnBase} bg-fg text-bg hover:bg-fg/90 shadow-sm`;
-export const btnSecondary = `${btnBase} glass-layer border border-line text-fg hover:bg-bg-soft hover:border-muted`;
-export const btnGhost = `${btnBase} text-subtle hover:bg-bg-soft hover:text-fg`;
-export const btnDanger = `${btnBase} bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-500 dark:hover:bg-red-500/20`;
+const btnBase =
+  "inline-flex items-center justify-center font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-not-allowed disabled:opacity-30 select-none text-center cursor-pointer rounded-lg";
 
-export const inputClass = "block w-full rounded-xl border border-line bg-bg-soft/50 px-4 py-3 text-sm text-fg placeholder:text-muted transition-all duration-300 focus:border-accent focus:bg-bg focus:outline-none focus:ring-1 focus:ring-accent";
-export const labelClass = "text-sm font-medium text-fg";
+// Buttons
+export const btnPrimary = `${btnBase} px-4 py-2 text-sm bg-white text-black font-semibold hover:bg-zinc-200 active:bg-zinc-300`;
+export const btnSecondary = `${btnBase} px-4 py-2 text-sm bg-black text-white border border-[#27272a] hover:bg-[#111113] hover:border-[#3f3f46]`;
+export const btnGhost = `${btnBase} px-3 py-1.5 text-xs text-[#a1a1aa] hover:text-white hover:bg-[#18181b]`;
+export const btnDanger = `${btnBase} px-3 py-1.5 text-xs bg-[#18181b] text-zinc-300 hover:text-white border border-[#27272a] hover:border-red-900`;
 
-export const cardClass = "glass-layer rounded-2xl p-6 md:p-8 border border-line shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none";
+// Inputs & Labels
+export const inputClass =
+  "surface-input block w-full rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#52525b] focus:outline-none";
+export const labelClass =
+  "block text-xs font-medium uppercase tracking-wider text-[#a1a1aa] mb-1.5 select-none";
 
-export function scoreTone(score: number): { text: string; bg: string; border: string; icon: string } {
-  if (score >= 80) return { text: "text-green-600", bg: "bg-green-500/10", border: "border-green-500/20", icon: "text-green-500" };
-  if (score >= 60) return { text: "text-amber-600", bg: "bg-amber-500/10", border: "border-amber-500/20", icon: "text-amber-500" };
-  return { text: "text-red-600", bg: "bg-red-500/10", border: "border-red-500/20", icon: "text-red-500" };
+// Surfaces & Cards
+export const cardClass =
+  "surface-card rounded-xl p-6";
+export const panelClass =
+  "surface-panel rounded-xl p-6";
+
+export function scoreTone(score: number): { text: string; bg: string; border: string } {
+  if (score >= 80) return { text: "text-white", bg: "bg-zinc-900", border: "border-zinc-700" };
+  if (score >= 60) return { text: "text-zinc-300", bg: "bg-zinc-900", border: "border-zinc-800" };
+  return { text: "text-zinc-400", bg: "bg-zinc-900", border: "border-zinc-800" };
 }

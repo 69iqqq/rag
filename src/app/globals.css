@@ -1,89 +1,259 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --color-bg: var(--bg);
-  --color-bg-soft: var(--bg-soft);
-  --color-fg: var(--fg);
-  --color-subtle: var(--subtle);
-  --color-muted: var(--muted);
-  --color-line: var(--line);
-  --color-accent: var(--accent);
-  --color-accent-soft: var(--accent-soft);
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --color-bg: #000000;
+  --color-bg-subtle: #09090b;
+  --color-bg-card: #111113;
+  --color-bg-elevated: #18181b;
+  --color-line: #27272a;
+  --color-line-light: #3f3f46;
+  --color-fg: #ffffff;
+  --color-subtle: #a1a1aa;
+  --color-muted: #71717a;
 }
 
-@layer base {
-  :root {
-    /* Liquid Glass Variables */
-    --bg: #ffffff;
-    --bg-soft: #f8fafc;
-    --fg: #0f172a;
-    --subtle: #475569;
-    --muted: #94a3b8;
-    --line: #e2e8f0;
-    --accent: #2563eb;
-    --accent-soft: #dbeafe;
-    --ease-glass: cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .dark {
-    --bg: #020617;
-    --bg-soft: #0f172a;
-    --fg: #f8fafc;
-    --subtle: #94a3b8;
-    --muted: #475569;
-    --line: #1e293b;
-    --accent: #3b82f6;
-    --accent-soft: #1e3a8a;
-  }
+:root {
+  color-scheme: dark;
+  --bg: #000000;
+  --bg-subtle: #09090b;
+  --bg-card: #111113;
+  --bg-elevated: #18181b;
+  --line: #27272a;
+  --line-light: #3f3f46;
+  --fg: #ffffff;
+  --subtle: #a1a1aa;
+  --muted: #71717a;
 }
 
-@layer utilities {
-  .glass-layer {
-    @apply bg-white/60 dark:bg-black/40 backdrop-blur-xl border border-line shadow-sm;
+html, body {
+  background-color: #000000;
+  color: #ffffff;
+  min-height: 100vh;
+}
+
+/* Hide scrollbars across all browsers while retaining full scrolling functionality */
+* {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Minimal Monochrome Surfaces */
+.surface-card {
+  background-color: #09090b;
+  border: 1px solid #27272a;
+}
+
+.surface-card-hover {
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.surface-card-hover:hover {
+  background-color: #111113;
+  border-color: #3f3f46;
+}
+
+.surface-panel {
+  background-color: #09090b;
+  border: 1px solid #27272a;
+}
+
+.surface-input {
+  background-color: #09090b;
+  border: 1px solid #27272a;
+  color: #ffffff;
+  transition: border-color 0.15s ease;
+}
+.surface-input:focus {
+  background-color: #000000;
+  border-color: #ffffff;
+  outline: none;
+}
+.surface-input::placeholder {
+  color: #52525b;
+}
+
+/* ========================================================================= */
+/* Apple Liquid Glass Material System                                        */
+/* Subtle translucent neutral glass over pure black workspace                */
+/* ========================================================================= */
+
+.liquid-glass {
+  background: rgba(18, 18, 20, 0.75);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
+
+.liquid-glass-nav {
+  background: rgba(10, 10, 12, 0.75);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.6);
+}
+
+.liquid-glass-panel {
+  background: rgba(10, 10, 12, 0.75);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.liquid-glass-card {
+  background: rgba(16, 16, 18, 0.65);
+  backdrop-filter: blur(16px) saturate(130%);
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.4);
+  transition: background-color 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out;
+}
+.liquid-glass-card:hover {
+  background: rgba(22, 22, 26, 0.8);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.5);
+}
+
+.liquid-glass-control {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px) saturate(130%);
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background 0.15s ease-out, border-color 0.15s ease-out, color 0.15s ease-out;
+}
+.liquid-glass-control:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.liquid-glass-control:active {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.liquid-glass-input {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  transition: border-color 0.15s ease-out, background 0.15s ease-out;
+}
+.liquid-glass-input:focus {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.3);
+  outline: none;
+}
+.liquid-glass-input::placeholder {
+  color: #71717a;
+}
+
+/* Glass aliases for components */
+.glass-nav {
+  background: rgba(10, 10, 12, 0.75);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.6);
+}
+.glass-card {
+  background: rgba(16, 16, 18, 0.65);
+  backdrop-filter: blur(16px) saturate(130%);
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.glass-panel {
+  background: rgba(10, 10, 12, 0.75);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.glass-input {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.3);
+  outline: none;
+}
+
+/* Resume Paper: Clean Real A4 Document */
+.resume-paper {
+  background: #ffffff;
+  color: #18181b;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  transform-origin: top center;
+}
+
+/* Print Styles: Exact Vector A4 PDF Generation */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
   }
   
-  .glass-panel {
-    @apply bg-white/60 dark:bg-black/40 backdrop-blur-xl border border-line rounded-3xl p-8 shadow-[0_8px_32px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgb(0,0,0,0.3)];
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 100% !important;
+  }
+  
+  /* Prevent clipping from nested overflow-hidden containers */
+  div, main, section {
+    overflow: visible !important;
   }
 
-  .glass-strong {
-    @apply bg-white/80 dark:bg-black/60 backdrop-blur-2xl border border-line;
+  header, nav, footer, .no-print, [data-no-print] {
+    display: none !important;
   }
 
-  .ambient-light {
-    @apply absolute rounded-full blur-[100px] pointer-events-none opacity-50 mix-blend-screen;
+  #resume-pdf-export-target {
+    position: static !important;
+    left: 0 !important;
+    top: 0 !important;
+    display: block !important;
+    width: 210mm !important;
+    min-height: 297mm !important;
+    margin: 0 auto !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    z-index: 999999 !important;
+    visibility: visible !important;
+  }
+  
+  #resume-document-to-print {
+    display: block !important;
+    position: static !important;
+    width: 210mm !important;
+    min-height: 297mm !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: #ffffff !important;
+    transform: none !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    z-index: 999999 !important;
+  }
+
+  #resume-document-to-print > div {
+    width: 210mm !important;
+    min-height: 297mm !important;
+    height: auto !important;
+    box-sizing: border-box !important;
   }
 }
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  * {
-    scroll-behavior: auto !important;
-  }
-}
-
-/* Page Transitions */
-body {
-  background-color: var(--bg);
-  color: var(--fg);
-  transition: background-color 0.5s ease;
-}
-
-[data-reveal] {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.8s var(--ease-glass), transform 0.8s var(--ease-glass);
-}
-[data-reveal="visible"] {
-  opacity: 1;
-  transform: translateY(0);
-}
-

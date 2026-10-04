@@ -56,3 +56,48 @@ export const resumeRequestSchema = z.object({
   filePath: z.string().min(1).max(300),
   fileName: z.string().trim().min(1).max(255),
 });
+
+export const builderAssistantRequestSchema = z.object({
+  action: z.enum([
+    "audit_and_ask",
+    "improve_all",
+    "tailor",
+    "answer_and_apply",
+    "custom_prompt",
+    "step_interview",
+    "generate_field_project",
+  ]),
+  resumeData: z.record(z.string(), z.any()).optional().default({}),
+  targetRole: z.string().trim().max(200).optional(),
+  jobDescription: z.string().trim().max(10000).optional(),
+  userPrompt: z.string().trim().max(2000).optional(),
+  fieldOrTopic: z.string().trim().max(300).optional(),
+  stepAnswer: z
+    .object({
+      questionId: z.string().trim().max(100),
+      section: z.string().trim().max(50),
+      question: z.string().trim().max(500),
+      answer: z.string().trim().max(2000),
+    })
+    .optional(),
+  qaAnswers: z
+    .array(
+      z.object({
+        question: z.string().trim().max(500),
+        answer: z.string().trim().max(1000),
+      })
+    )
+    .optional(),
+});
+
+export const generatedProjectSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  technologies: z.string(),
+  link: z.string().optional(),
+  date: z.string().optional(),
+});
+
+export type BuilderAssistantRequest = z.infer<typeof builderAssistantRequestSchema>;
+

@@ -1,10 +1,8 @@
 "use client";
 
 import ScoreRing from "./ScoreRing";
-import { CheckCircle2, XCircle, AlertCircle, TrendingUp, Sparkles, ChevronRight } from "lucide-react";
 import Reveal from "./Reveal";
 import { cardClass } from "./styles";
-import { useState } from "react";
 
 type AnalysisType = {
   score: number;
@@ -16,14 +14,13 @@ type AnalysisType = {
   missing_keywords: string[];
 };
 
-export default function AnalysisCard({ analysis }: { analysis: any }) {
-  // Try parsing the json safely
+export default function AnalysisCard({ analysis }: { analysis: Record<string, unknown> }) {
   let parsedAnalysis: AnalysisType | null = null;
   try {
     if (typeof analysis.analysis_result === "string") {
-      parsedAnalysis = JSON.parse(analysis.analysis_result);
-    } else {
-      parsedAnalysis = analysis.analysis_result;
+      parsedAnalysis = JSON.parse(analysis.analysis_result) as AnalysisType;
+    } else if (analysis.analysis_result) {
+      parsedAnalysis = analysis.analysis_result as AnalysisType;
     }
   } catch (e) {
     console.error("Failed to parse analysis result", e);
@@ -31,9 +28,8 @@ export default function AnalysisCard({ analysis }: { analysis: any }) {
 
   if (!parsedAnalysis) {
     return (
-      <div className="glass-panel p-8 text-center text-red-500">
-        <AlertCircle className="mx-auto h-8 w-8 mb-2" />
-        <p>Failed to load analysis data.</p>
+      <div className="glass-panel p-8 text-center text-rose-400">
+        <p className="font-semibold">Failed to load analysis data.</p>
       </div>
     );
   }
@@ -42,14 +38,14 @@ export default function AnalysisCard({ analysis }: { analysis: any }) {
     <div className="space-y-8">
       {/* Header Section */}
       <Reveal>
-         <div className="glass-panel p-8 flex flex-col md:flex-row gap-8 items-center border-l-4 border-l-accent">
+         <div className="border border-[#27272a] bg-[#09090b] rounded-2xl p-8 flex flex-col md:flex-row gap-8 items-center border-l-4 border-l-white">
             <div className="shrink-0 flex flex-col items-center">
               <ScoreRing score={parsedAnalysis.score} />
-              <span className="text-xs font-medium text-subtle mt-4 uppercase tracking-widest">ATS Match</span>
+              <span className="text-xs font-semibold text-[#a1a1aa] mt-4 uppercase tracking-widest">ATS Match</span>
             </div>
             <div className="text-center md:text-left flex-1">
-               <h2 className="text-2xl font-semibold text-fg mb-3">Analysis Complete</h2>
-               <p className="text-subtle leading-relaxed">
+               <h2 className="text-2xl font-bold text-white mb-3">Analysis Complete</h2>
+               <p className="text-zinc-300 leading-relaxed text-sm">
                  {parsedAnalysis.summary}
                </p>
             </div>
@@ -61,16 +57,14 @@ export default function AnalysisCard({ analysis }: { analysis: any }) {
          {/* Strengths */}
          <Reveal delay={0.1}>
             <div className={`${cardClass} h-full`}>
-               <div className="flex items-center gap-3 mb-6">
-                  <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center">
-                     <TrendingUp className="h-5 w-5 text-green-500" />
-                  </div>
-                  <h3 className="font-semibold text-fg text-lg">Strengths</h3>
+               <div className="flex items-center justify-between mb-6 pb-2 border-b border-white/[0.06]">
+                  <h3 className="font-semibold text-white text-lg">Key Strengths</h3>
+                  <span className="text-xs uppercase tracking-wider text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Positive</span>
                </div>
                <ul className="space-y-4">
                   {parsedAnalysis.strengths?.map((item, i) => (
-                    <li key={i} className="flex gap-3 text-sm text-subtle items-start">
-                       <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <li key={i} className="flex gap-3 text-sm text-zinc-300 items-start">
+                       <span className="text-emerald-400 font-bold shrink-0 mt-0.5">•</span>
                        <span className="leading-relaxed">{item}</span>
                     </li>
                   ))}
@@ -81,16 +75,14 @@ export default function AnalysisCard({ analysis }: { analysis: any }) {
          {/* Weaknesses */}
          <Reveal delay={0.2}>
             <div className={`${cardClass} h-full`}>
-               <div className="flex items-center gap-3 mb-6">
-                  <div className="h-10 w-10 rounded-full bg-red-500/10 flex items-center justify-center">
-                     <AlertCircle className="h-5 w-5 text-red-500" />
-                  </div>
-                  <h3 className="font-semibold text-fg text-lg">Areas to Improve</h3>
+               <div className="flex items-center justify-between mb-6 pb-2 border-b border-white/[0.06]">
+                  <h3 className="font-semibold text-white text-lg">Areas to Improve</h3>
+                  <span className="text-xs uppercase tracking-wider text-rose-400 font-bold bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">Action Required</span>
                </div>
                <ul className="space-y-4">
                   {parsedAnalysis.weaknesses?.map((item, i) => (
-                    <li key={i} className="flex gap-3 text-sm text-subtle items-start">
-                       <XCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+                    <li key={i} className="flex gap-3 text-sm text-zinc-300 items-start">
+                       <span className="text-rose-400 font-bold shrink-0 mt-0.5">•</span>
                        <span className="leading-relaxed">{item}</span>
                     </li>
                   ))}
@@ -104,17 +96,13 @@ export default function AnalysisCard({ analysis }: { analysis: any }) {
           {/* Recommendations (Takes up 2 columns) */}
          <Reveal delay={0.3} className="md:col-span-2">
             <div className={`${cardClass} h-full`}>
-               <div className="flex items-center gap-3 mb-6">
-                  <div className="h-10 w-10 rounded-full bg-accent/10 flex items-center justify-center">
-                     <Sparkles className="h-5 w-5 text-accent" />
-                  </div>
-                  <h3 className="font-semibold text-fg text-lg">AI Recommendations</h3>
+               <div className="mb-6 pb-2 border-b border-white/[0.06]">
+                  <h3 className="font-semibold text-white text-lg">Actionable Recommendations</h3>
                </div>
-               <ul className="space-y-5">
+               <ul className="space-y-4">
                   {parsedAnalysis.recommendations?.map((item, i) => (
-                    <li key={i} className="flex gap-4 text-sm text-subtle items-start glass-layer p-4 rounded-xl border border-line">
-                       <ChevronRight className="h-5 w-5 text-accent shrink-0 mt-0.5" />
-                       <span className="leading-relaxed text-fg">{item}</span>
+                    <li key={i} className="text-sm text-zinc-200 p-4 rounded-xl border border-[#27272a] bg-[#111113] leading-relaxed">
+                       {item}
                     </li>
                   ))}
                </ul>
@@ -123,33 +111,33 @@ export default function AnalysisCard({ analysis }: { analysis: any }) {
 
          {/* Keywords */}
          <Reveal delay={0.4} className="md:col-span-1">
-             <div className={`${cardClass} h-full flex flex-col gap-8`}>
+             <div className={`${cardClass} h-full flex flex-col gap-6`}>
                <div>
-                  <h3 className="font-semibold text-fg text-sm mb-4 uppercase tracking-wider text-muted">Matched Keywords</h3>
+                  <h3 className="font-semibold text-white text-xs mb-3 uppercase tracking-wider text-zinc-400">Matched Keywords</h3>
                   <div className="flex flex-wrap gap-2">
                      {parsedAnalysis.keyword_matches?.length > 0 ? (
                         parsedAnalysis.keyword_matches.map((kw, i) => (
-                          <span key={i} className="inline-flex items-center rounded-full bg-green-500/10 px-2.5 py-1 text-xs font-medium text-green-600 border border-green-500/20">
+                          <span key={i} className="inline-flex items-center rounded-lg bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-400 border border-emerald-500/20">
                             {kw}
                           </span>
                         ))
                      ) : (
-                        <span className="text-sm text-subtle">No matched keywords</span>
+                        <span className="text-xs text-zinc-400">No matched keywords</span>
                      )}
                   </div>
                </div>
 
                <div>
-                  <h3 className="font-semibold text-fg text-sm mb-4 uppercase tracking-wider text-muted">Missing Keywords</h3>
+                  <h3 className="font-semibold text-white text-xs mb-3 uppercase tracking-wider text-zinc-400">Missing Keywords</h3>
                   <div className="flex flex-wrap gap-2">
                      {parsedAnalysis.missing_keywords?.length > 0 ? (
                         parsedAnalysis.missing_keywords.map((kw, i) => (
-                          <span key={i} className="inline-flex items-center rounded-full bg-red-500/10 px-2.5 py-1 text-xs font-medium text-red-500 border border-red-500/20">
+                          <span key={i} className="inline-flex items-center rounded-lg bg-rose-500/10 px-2.5 py-1 text-xs font-semibold text-rose-400 border border-rose-500/20">
                             {kw}
                           </span>
                         ))
                      ) : (
-                        <span className="text-sm text-subtle">No missing keywords</span>
+                        <span className="text-xs text-zinc-400">No missing keywords</span>
                      )}
                   </div>
                </div>
