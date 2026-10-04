@@ -258,8 +258,12 @@ function BuilderContent() {
       await exportResumeToPdf(data, (msg) => setExportStatusMessage(msg));
       setAiResultMessage(`Downloaded ${data.personalInfo.fullName || "Resume"}_Resume.pdf`);
     } catch (err) {
-      console.error("Direct PDF export failed, falling back to system print:", err);
-      window.print();
+      console.error("Direct PDF export failed:", err);
+      setAiResultMessage(
+        err instanceof Error
+          ? `PDF export failed: ${err.message}`
+          : "PDF export failed. Please check browser permissions or use the Print button."
+      );
     } finally {
       setIsExportingPdf(false);
       setExportStatusMessage("");
@@ -1119,25 +1123,6 @@ function BuilderContent() {
             >
               <DocumentViewer resume={data} />
             </div>
-
-            {/* Dedicated Offscreen PDF Export & Print Target (True 794px A4 Document, zero-offset for html2canvas) */}
-            <div
-              id="resume-pdf-export-target"
-              style={{
-                position: "fixed",
-                left: 0,
-                top: 0,
-                width: "794px",
-                minHeight: "1123px",
-                zIndex: -99999,
-                opacity: 0,
-                pointerEvents: "none",
-                backgroundColor: "#ffffff",
-              }}
-              aria-hidden="true"
-            >
-              <ResumeDocument resume={data} id="resume-document-to-print" />
-            </div>
           </div>
         </div>
 
@@ -1801,6 +1786,23 @@ function BuilderContent() {
             </div>
           )}
         </div>
+      </div>
+      {/* Dedicated Offscreen PDF Export & Print Target (Always mounted at root, never blocked by tabs or overflow) */}
+      <div
+        id="resume-pdf-export-target"
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "794px",
+          minHeight: "1123px",
+          zIndex: -99999,
+          pointerEvents: "none",
+          backgroundColor: "#ffffff",
+        }}
+        aria-hidden="true"
+      >
+        <ResumeDocument resume={data} id="resume-document-to-print" />
       </div>
     </div>
   );

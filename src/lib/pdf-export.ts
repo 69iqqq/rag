@@ -13,13 +13,16 @@ export async function exportResumeToPdf(
   resume: ResumeData,
   onProgress?: (message: string) => void,
 ): Promise<void> {
-  // 1. Wait for web fonts and typography to be completely ready
+  // 1. Wait for web fonts and typography to be completely ready (with safety timeout)
   onProgress?.("Loading typography assets...");
   if (typeof document !== "undefined" && document.fonts) {
     try {
-      await document.fonts.ready;
+      await Promise.race([
+        document.fonts.ready,
+        new Promise((resolve) => setTimeout(resolve, 1500)),
+      ]);
     } catch {
-      // Continue if browser does not support fonts.ready
+      // Continue if browser does not support fonts.ready or times out
     }
   }
 
@@ -60,12 +63,15 @@ export async function exportResumeToPdf(
     onclone: (clonedDoc) => {
       const clonedTarget = clonedDoc.getElementById(targetId);
       if (clonedTarget) {
+        clonedTarget.style.position = "fixed";
+        clonedTarget.style.left = "0px";
+        clonedTarget.style.top = "0px";
+        clonedTarget.style.zIndex = "999999";
         clonedTarget.style.opacity = "1";
         clonedTarget.style.visibility = "visible";
         clonedTarget.style.display = "block";
-        clonedTarget.style.position = "static";
-        clonedTarget.style.zIndex = "1000";
         clonedTarget.style.width = "794px";
+        clonedTarget.style.backgroundColor = "#ffffff";
       }
     },
   });
