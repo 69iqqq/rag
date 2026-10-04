@@ -1120,16 +1120,18 @@ function BuilderContent() {
               <DocumentViewer resume={data} />
             </div>
 
-            {/* Dedicated Offscreen PDF Export & Print Target (True 794px x 1123px A4 Document) */}
+            {/* Dedicated Offscreen PDF Export & Print Target (True 794px A4 Document, zero-offset for html2canvas) */}
             <div
               id="resume-pdf-export-target"
               style={{
                 position: "fixed",
-                left: "-9999px",
+                left: 0,
                 top: 0,
                 width: "794px",
                 minHeight: "1123px",
-                zIndex: -100,
+                zIndex: -99999,
+                opacity: 0,
+                pointerEvents: "none",
                 backgroundColor: "#ffffff",
               }}
               aria-hidden="true"

@@ -61,7 +61,7 @@ export default function DocumentViewer({
           left: 0,
         }}
       >
-        <ResumeDocument resume={resume} id={id} />
+        <ResumeDocument resume={resume} id={id || "resume-viewer-preview"} />
       </div>
     </div>
   );

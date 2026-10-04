@@ -13,6 +13,16 @@ export async function exportResumeToPdf(
   resume: ResumeData,
   onProgress?: (message: string) => void,
 ): Promise<void> {
+  // 1. Wait for web fonts and typography to be completely ready
+  onProgress?.("Loading typography assets...");
+  if (typeof document !== "undefined" && document.fonts) {
+    try {
+      await document.fonts.ready;
+    } catch {
+      // Continue if browser does not support fonts.ready
+    }
+  }
+
   const targetId = "resume-pdf-export-target";
   let target = document.getElementById(targetId);
 
@@ -29,21 +39,33 @@ export async function exportResumeToPdf(
 
   onProgress?.("Rendering high-resolution vector canvas...");
 
-  // Capture canvas with 2x scale for sharp text and crisp line rendering
+  const targetWidth = 794;
+  const targetHeight = Math.max(target.scrollHeight, target.offsetHeight, 1123);
+
+  // Capture canvas with 2x scale for crisp font outlines and sharp line rendering
   const canvas = await html2canvas(target as HTMLElement, {
     scale: 2,
     useCORS: true,
     allowTaint: true,
     backgroundColor: "#ffffff",
     logging: false,
+    width: targetWidth,
+    height: targetHeight,
+    windowWidth: targetWidth,
+    windowHeight: targetHeight,
+    x: 0,
+    y: 0,
+    scrollX: 0,
+    scrollY: 0,
     onclone: (clonedDoc) => {
       const clonedTarget = clonedDoc.getElementById(targetId);
       if (clonedTarget) {
-        clonedTarget.style.left = "0px";
-        clonedTarget.style.top = "0px";
-        clonedTarget.style.position = "static";
+        clonedTarget.style.opacity = "1";
         clonedTarget.style.visibility = "visible";
         clonedTarget.style.display = "block";
+        clonedTarget.style.position = "static";
+        clonedTarget.style.zIndex = "1000";
+        clonedTarget.style.width = "794px";
       }
     },
   });
@@ -58,25 +80,26 @@ export async function exportResumeToPdf(
     compress: true,
   });
 
-  const imgData = canvas.toDataURL("image/jpeg", 0.98);
+  // Use PNG for lossless text clarity without JPEG compression halos
+  const imgData = canvas.toDataURL("image/png");
   const pdfWidth = 210;
   const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+  const pageHeight = 297;
 
   // Single-page or multi-page handling
-  if (pdfHeight <= 298) {
-    pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
+  if (pdfHeight <= pageHeight + 2) {
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight, undefined, "FAST");
   } else {
     let heightLeft = pdfHeight;
     let position = 0;
-    const pageHeight = 297;
 
-    pdf.addImage(imgData, "JPEG", 0, position, pdfWidth, pdfHeight);
+    pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight, undefined, "FAST");
     heightLeft -= pageHeight;
 
-    while (heightLeft > 5) {
-      position = heightLeft - pdfHeight;
+    while (heightLeft > 2) {
+      position -= pageHeight;
       pdf.addPage();
-      pdf.addImage(imgData, "JPEG", 0, position, pdfWidth, pdfHeight);
+      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight, undefined, "FAST");
       heightLeft -= pageHeight;
     }
   }
