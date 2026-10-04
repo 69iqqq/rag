@@ -4,8 +4,77 @@
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
+@layer base {
+  :root {
+    /* Liquid Glass Variables */
+    --bg: #ffffff;
+    --bg-soft: #f8fafc;
+    --fg: #0f172a;
+    --subtle: #475569;
+    --muted: #94a3b8;
+    --line: #e2e8f0;
+    --accent: #2563eb;
+    --accent-soft: #dbeafe;
+    --ease-glass: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .dark {
+    --bg: #020617;
+    --bg-soft: #0f172a;
+    --fg: #f8fafc;
+    --subtle: #94a3b8;
+    --muted: #475569;
+    --line: #1e293b;
+    --accent: #3b82f6;
+    --accent-soft: #1e3a8a;
+  }
+}
+
+@layer utilities {
+  .glass-layer {
+    @apply bg-white/60 dark:bg-black/40 backdrop-blur-xl border border-line shadow-sm;
+  }
+  
+  .glass-panel {
+    @apply glass-layer rounded-3xl p-8 shadow-[0_8px_32px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgb(0,0,0,0.3)];
+  }
+
+  .glass-strong {
+    @apply bg-white/80 dark:bg-black/60 backdrop-blur-2xl border border-line;
+  }
+
+  .ambient-light {
+    @apply absolute rounded-full blur-[100px] pointer-events-none opacity-50 mix-blend-screen;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     scroll-behavior: auto !important;
   }
+}
+
+/* Page Transitions */
+body {
+  background-color: var(--bg);
+  color: var(--fg);
+  transition: background-color 0.5s ease;
+}
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s var(--ease-glass), transform 0.8s var(--ease-glass);
+}
+[data-reveal="visible"] {
+  opacity: 1;
+  transform: translateY(0);
 }
