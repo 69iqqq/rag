@@ -9,6 +9,7 @@ import DocumentViewer from "@/components/DocumentViewer";
 import ResumeDocument from "@/components/ResumeDocument";
 import { GlassInput, GlassTextarea } from "@/components/GlassComponents";
 import { exportResumeToPdf } from "@/lib/pdf-export";
+import { ArrowLeft } from "lucide-react";
 
 function BuilderContent() {
   const searchParams = useSearchParams();
@@ -540,10 +541,19 @@ function BuilderContent() {
   ];
 
   return (
-    <div className="flex flex-col h-[calc(100vh-3.5rem)] w-full overflow-hidden bg-black text-white">
+    <div className="flex flex-col h-screen w-full overflow-hidden bg-black text-white">
       {/* WORKSPACE TOOLBAR */}
-      <div className="no-print h-12 border-b border-white/[0.08] liquid-glass-nav px-6 flex items-center justify-between shrink-0 z-20">
-        <div className="flex items-center gap-4">
+      <div className="no-print h-12 border-b border-white/[0.08] liquid-glass-nav px-4 sm:px-6 flex items-center justify-between shrink-0 z-20">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-2 text-xs text-[#a1a1aa] hover:text-white transition-colors group"
+            title="Back to Dashboard"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+            <span className="font-semibold tracking-tight text-white uppercase text-[11px] hidden sm:inline">Next Role</span>
+          </Link>
+          <div className="h-3 w-px bg-white/10" />
           <Link
             href="/dashboard"
             className="text-xs text-[#a1a1aa] hover:text-white transition-colors"
@@ -555,7 +565,7 @@ function BuilderContent() {
             type="text"
             value={data.title}
             onChange={(e) => setData((p) => ({ ...p, title: e.target.value }))}
-            className="bg-transparent text-xs font-semibold text-white focus:bg-white/[0.08] rounded px-2 py-1 outline-none border border-transparent focus:border-white/20 transition-all max-w-[200px] truncate"
+            className="bg-transparent text-xs font-semibold text-white focus:bg-white/[0.08] rounded px-2 py-1 outline-none border border-transparent focus:border-white/20 transition-all max-w-[150px] sm:max-w-[220px] truncate"
             placeholder="Untitled Resume"
           />
         </div>
